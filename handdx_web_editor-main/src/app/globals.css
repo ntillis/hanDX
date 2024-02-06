@@ -1,0 +1,230 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255, 1;
+  --background-start-rgb: 255, 255, 255, 1;
+  --background-end-rgb: 255, 255, 255, 1;
+  --secondary-rgb: 16, 135, 241;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255, 1;
+    --background-start-rgb: 255, 255, 255, 1;
+    --background-end-rgb: 255, 255, 255, 1;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+svg {
+  display: outside;
+}
+
+#google {
+  background-color: lightcoral;
+}
+
+text {
+  fill: rgb(var(--secondary-rgb));
+  stroke: black;
+  stroke-width: 2.75;
+  font-size: 5rem;
+  font-weight: bold;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+b {
+  color: black;
+  font-size: 1rem;
+}
+
+/* Bordered form */
+form {
+  border: 0px;
+}
+
+.Card {
+  border: 3px black;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+/* Full-width inputs */
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid black;
+  box-sizing: border-box;
+  color: black;
+  font-size: 1rem;
+}
+
+.delete {
+  padding-left: 10 px;
+  margin-left: 30px;
+  background-color: white;
+  color: rgb(0, 0, 0);
+  border: 1px solid black;
+  cursor: pointer;
+  border-radius: 25px;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+.delete:hover{
+  background-color: #f44336;
+  padding-left: 10 px;
+  margin-left: 30px;
+  color: white;
+  border: 1px solid black;
+  cursor: pointer;
+  border-radius: 25px;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+.edit {
+  background-color: white;
+  color: rgb(0, 0, 0);
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: 1px solid black;
+  cursor: pointer;
+  border-radius: 25px;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+.edit:hover{
+  background-color: rgb(var(--secondary-rgb));
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: 1px solid black;
+  cursor: pointer;
+  border-radius: 25px;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+.edit-ch {
+  color: black;
+}
+
+.edit-ch:hover {
+  color: white;
+}
+/* Set a style for all buttons */
+button {
+  background-color: rgb(var(--secondary-rgb));
+  color: rgb(0, 0, 0);
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: 1px solid black;
+  cursor: pointer;
+  border-radius: 25px;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+.nodes {
+  padding-top: 10px;
+}
+
+.Card--body-text {
+  color: black;
+  font-size: 1rem;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+.Card--body-title {
+  color: black;
+  font-size: 1.5rem;
+  font-family:Arial, Helvetica, sans-serif;
+  font-weight: 500;
+}
+
+.Card--body-ntitle {
+  color: black;
+  font-size: 1.2rem;
+  font-family:Arial, Helvetica, sans-serif;
+  font-weight: 500;
+}
+
+/* Add a hover effect for buttons */
+button:hover {
+  opacity: 0.8;
+}
+
+/* Add padding to containers */
+container {
+  padding: 16px;
+}
+
+bcontainer {
+  padding: 4px;
+}
+
+h1 {
+  font-size: 1.8rem;
+  color: black;
+  font-family:Arial, Helvetica, sans-serif;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 1.2rem;
+  color: black;
+  font-family:Arial, Helvetica, sans-serif;
+  font-weight: 500;
+}
+
+main {
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 20vh;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+.underline{
+  text-decoration: 'underline';
+}
+
+.logout-button{
+  float: right;
+  margin-right: 1rem;
+  margin-top: 1.5rem;
+}
+
+.full-width{
+  width: 100%;
+}
+
+.welcome{
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+.child{
+  display: inline-block;
+}
+
+.pageContent{
+  margin-left: 2rem;
+}

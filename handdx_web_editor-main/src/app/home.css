@@ -1,0 +1,103 @@
+/* home.css */
+
+:root {
+  --foreground-rgb: 255, 255, 255, 1;
+  --background-start-rgb: 255, 255, 255, 1;
+  --background-end-rgb: 255, 255, 255, 1;
+  --secondary-rgb: 16, 135, 241;
+}
+
+/* Style for the container div */
+.Home {
+  padding: 8px;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+/* Style for the "Logout" button */
+.logout-button {
+  text-align: right;
+  margin-right: 20px;
+  margin-top: 10px; 
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+.logout-button button {
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.logout-button button:hover {
+  background-color: #d32f2f;
+}
+
+/* Style for the main content */
+.p-8 {
+  padding: 8px;
+}
+
+.text-black {
+  color: #000;
+  font-size: 1.5rem;
+}
+
+.center {
+  text-align: center;
+  background-color: rgb(var(--secondary-rgb)); 
+  color: #fff; 
+  padding: 10px; 
+  font-size: 1.5rem; 
+
+  text-align: center;
+}
+
+
+.welcome {
+  font-size: 1.2rem;
+  margin-left: 40px;
+  font-weight: 400;
+  margin-top: 20px;
+  padding-right: 10px;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+/* Style for the container div */
+.NavMenu {
+  margin-top: 4px;
+}
+
+/* Style for the horizontal line */
+hr {
+  margin: 0;
+  border: none;
+
+}
+
+/* Style for the navigation menu */
+ul {
+  list-style: none;
+  padding: 0;
+  margin-left: 30px;
+  margin-right: 30px;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+ul li {
+  cursor: pointer;
+  padding: 8px 16px;
+  color: black;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+ul li:hover {
+  background-color: rgb(var(--secondary-rgb));
+  color: #fff;
+}
+
+ul li.active {
+  background-color: white;
+  color: rgb(var(--secondary-rgb));
+}
