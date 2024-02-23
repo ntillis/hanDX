@@ -14,8 +14,10 @@ final authControllerExceptionProvider =
 final authControllerProvider = StateNotifierProvider<AuthController, User?>(
     (ref) => AuthController(ref)..appStarted());
 
+
 class AuthController extends StateNotifier<User?> {
   final Ref _ref;
+  bool notify = false;
 
   StreamSubscription<User?>? _authStateChangesSubscription;
 
@@ -26,6 +28,7 @@ class AuthController extends StateNotifier<User?> {
         .authStateChanges
         .listen((user) => state = user);
   }
+  
 
   void appStarted() async {
     final user = _ref.read(authRepositoryProvider).getCurrentUser();
@@ -39,6 +42,7 @@ class AuthController extends StateNotifier<User?> {
       await _ref
           .read(authRepositoryProvider)
           .signInWithEmailAndPassword(email, password);
+          notify = true;
     } on CustomException catch (e) {
       _ref.read(authControllerExceptionProvider.notifier).state = e;
     }
@@ -93,4 +97,9 @@ class AuthController extends StateNotifier<User?> {
       throw CustomException(message: e.message);
     }
   }
+
+  void setNotify(bool n) {
+    notify = n;
+  }
 }
+

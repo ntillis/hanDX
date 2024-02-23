@@ -2,15 +2,30 @@ import 'package:flutter/cupertino.dart';
 import 'package:handdx/controllers/auth_controller.dart';
 import 'package:handdx/ui/screens/account_screen.dart';
 import 'package:handdx/ui/widgets/decision_tree_list_widget.dart';
-import 'package:handdx/ui/widgets/resources.dart'; // Import the footer link widget
+import 'package:handdx/ui/widgets/resources.dart'; 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authControllerState = ref.watch(authControllerProvider);
+    final authController = ref.watch(authControllerProvider.notifier);
+
+
+if (authController.notify) {
+  Fluttertoast.showToast(
+    msg: "Disclaimer: While this app provides information, it is important to remember that it is not a substitute for professional medical advice, diagnosis, or treatment. The results provided by this app are for informational purposes only and should not be used as a definitive diagnosis. If you are experiencing any symptoms or have an injury, we strongly recommend seeking medical attention from a qualified healthcare professional. They can provide you with personalized advice and treatment options tailored to your specific situation. By using this app, you acknowledge that you understand and agree to the limitations of its information and that you will seek appropriate medical care when necessary.",
+    toastLength: Toast.LENGTH_LONG,
+    gravity: ToastGravity.CENTER,
+    timeInSecForIosWeb: 10,
+    fontSize: 16.0,
+  );
+  // Update the first login flag to false
+  authController.setNotify(false);
+}
+
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -25,7 +40,7 @@ class HomeScreen extends HookConsumerWidget {
               children: const [DecisionTreeList()],
             ),
           ),
-          Resources(), // Include the footer link widget here
+          Resources(),
         ],
       ),
     );
@@ -44,3 +59,4 @@ Widget accountWidget(BuildContext context, WidgetRef ref) {
     child: const Text('Account'),
   );
 }
+
