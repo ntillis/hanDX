@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:handdx/ui/screens/login_screen.dart';
 import 'package:handdx/main.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -17,11 +16,6 @@ void main() {
   testWidgets('App Initialization', (WidgetTester tester) async {
     const screen = HandDxApp();
     await tester.pumpWidget(const ProviderScope(child: screen));
-    expect(find.byWidget(screen), findsOneWidget);
-  });
-  testWidgets('Login Screen', (WidgetTester tester) async {
-    const screen = LoginScreen();
-    await tester.pumpWidget(const ProviderScope(child: CupertinoApp(home: screen)));
     expect(find.byWidget(screen), findsOneWidget);
   });
 }

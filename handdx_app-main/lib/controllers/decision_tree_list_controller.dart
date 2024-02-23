@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:handdx/controllers/auth_controller.dart';
 import 'package:handdx/models/decision_tree_model.dart';
 import 'package:handdx/repositories/custom_exception.dart';
 import 'package:handdx/repositories/decision_tree_repository.dart';
@@ -12,22 +11,16 @@ final decisionTreeListExceptionProvider =
 
 final decisionTreeListControllerProvider = StateNotifierProvider<
     DecisionTreeListController, AsyncValue<List<DecisionTree>>>((ref) {
-  // Update decision tree controller when auth state changes
-  final user = ref.watch(authControllerProvider);
-  return DecisionTreeListController(ref, user?.uid);
+  return DecisionTreeListController(ref);
 });
 
 class DecisionTreeListController
     extends StateNotifier<AsyncValue<List<DecisionTree>>> {
   final Ref _ref;
-  final String? uid;
 
-  DecisionTreeListController(this._ref, this.uid)
+  DecisionTreeListController(this._ref)
       : super(const AsyncLoading()) {
-    // retrieve only when signed in to firebase
-    if (uid != null) {
-      retrieveDecisionTrees();
-    }
+    retrieveDecisionTrees();
   }
 
   Future<void> retrieveDecisionTrees({bool isRefreshing = false}) async {
@@ -38,10 +31,8 @@ class DecisionTreeListController
       final decisionTrees = await _ref
           .read(decisionTreeRepositoryProvider)
           .retrieveDecisionTrees();
-      if (mounted) {
-        log('MOUNTED');
-        state = AsyncData(decisionTrees);
-      }
+      log('SUCCESS');
+      state = AsyncData(decisionTrees);
     } on CustomException catch (e, st) {
       log('EXCEPTION');
       // display no decision tree content, only error message (no snack bar)
