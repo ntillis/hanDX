@@ -4,6 +4,7 @@ import React, { useState,
 import ReactFlow, {
   MiniMap,
   Controls,
+  Background,
   ReactFlowProvider
 } from 'reactflow';
 import 'reactflow/dist/style.css';
@@ -49,7 +50,7 @@ const DecisionTree = (docId) => {
 
   // Render the decision tree with React Flow
   return (
-    <div style={{ height: '100vh' }}>
+    <div style={{ width: '100vw', height: '100vh' }}>
         <ReactFlowProvider>
             <ReactFlow
                 nodes={nodes}
@@ -60,6 +61,7 @@ const DecisionTree = (docId) => {
             />
             <Controls/>
             <MiniMap/>
+            <Background variant="dots" gap={12} size={1} />
             {/* Additional UI for adding or editing nodes could go here */}
       </ReactFlowProvider>
     </div>
