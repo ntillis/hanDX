@@ -15,8 +15,12 @@ const db = getFirestore(app);
 
 // Function to fetch data
 async function fetchNode(nodeId, nodesCollectionRef) {
-  const nodeRef = doc(nodesCollectionRef, nodeId);
+  console.log("path: " + nodesCollectionRef.path);  //Debug
+
+  const nodeRef = doc(db, `${nodesCollectionRef.path}/${nodeId}`);
+  console.log("fetchNode 20");  //Debug
   const nodeSnap = await getDoc(nodeRef);
+  console.log("fetchNode 22");  //Debug
 
   if (!nodeSnap.exists()) {
     console.error(`No node found with ID ${nodeId}`);
@@ -24,6 +28,7 @@ async function fetchNode(nodeId, nodesCollectionRef) {
   }
 
   const nodeData = nodeSnap.data();
+  console.log("nodeData: " + nodeData);
   const reactFlowNode = {
     id: nodeId,
     // Assuming nodeData contains a field 'text' for the label
@@ -62,10 +67,9 @@ const DecisionTree = (docId) => {
 
       const treeData = treeDocSnap.data();
       const nodesCollectionRef = collection(treeDocRef, "nodes");
-      console.log(treeData);
-      console.log(nodesCollectionRef);
+      console.log(treeData);  //Debug
+      console.log(nodesCollectionRef);  //Debug
       const { node: rootNode, edges } = await fetchNode(treeData.rootNode, nodesCollectionRef);
-
       setElements([rootNode, ...edges]);
     };
 
