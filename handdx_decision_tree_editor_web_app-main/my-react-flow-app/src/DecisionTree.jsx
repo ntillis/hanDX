@@ -22,43 +22,7 @@ const simpleElements = [
   { id: 'e1-3', source: '1', target: '3', animated: true },
 ];
 
-// Function to fetch data
-async function fetchNodeOLD(nodeId, nodesCollectionRef, accumulatedEdges = []) {
-  console.log("path: " + nodesCollectionRef.path);  //Debug
-  console.log("nodeId: " + nodeId);
-  const nodeRef = doc(db, `${nodesCollectionRef.path}/${nodeId}`);
-  const nodeSnap = await getDoc(nodeRef);
-
-  if (!nodeSnap.exists()) {
-    console.error(`No node found with ID ${nodeId}`);
-    return null;
-  }
-
-  const nodeData = nodeSnap.data();
-  //console.log("nodeData: " + nodeData);
-  const reactFlowNode = {
-    id: nodeId,
-    data: { label: nodeData.text || `Node ${nodeId}` },
-    position: { x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight }, // Random positioning, consider a better approach
-    type: nodeData.isResult ? 'output' : 'default',
-  };
-
-  let edges = [...accumulatedEdges];
-  if (nodeData.children) {
-    for (const child of nodeData.children) {
-      console.log("about to call fetchNode with child.nodeId: " + child.nodeId);
-      const childNode = await fetchNode(child.nodeId, nodesCollectionRef, edges);
-      if (childNode) {
-        edges.concat(childNode.edges); // Combine edges from the recursive call
-        edges.push({ id: `e${nodeId}-${child.nodeId}`, source: nodeId, target: child.nodeId, label: child.text });
-      }
-    }
-  }
-
-  return { node: reactFlowNode, edges: edges }; // Return the combined edges
-}
-
-async function fetchNode(nodeId, nodesCollectionRef, accumulatedEdges = []) {
+async function fetchNode(nodeId, nodesCollectionRef, accumulatedEdges = [], accumulatedNodes = []) {
   console.log("path: " + nodesCollectionRef.path);
   console.log("nodeId: " + nodeId);
 
@@ -67,9 +31,10 @@ async function fetchNode(nodeId, nodesCollectionRef, accumulatedEdges = []) {
 
   if (!nodeSnap.exists()) {
     console.error(`No node found with ID ${nodeId}`);
-    return { node: null, edges: accumulatedEdges };
+    return { node: null, edges: accumulatedEdges, nodes: accumulatedNodes };
   }
 
+  //Get data of current node, populate node fields with it
   const nodeData = nodeSnap.data();
   const reactFlowNode = {
     id: nodeId,
@@ -79,44 +44,36 @@ async function fetchNode(nodeId, nodesCollectionRef, accumulatedEdges = []) {
   };
 
   let edges = accumulatedEdges; // Use the accumulatedEdges passed to the function
+  let nodes = accumulatedNodes; // Use the accumulatedNodes passed to the function
+
+  nodes.push(reactFlowNode);
 
   if (nodeData.children) {
     for (const child of nodeData.children) {
       console.log("about to call fetchNode with child.nodeId: " + child.nodeId);
       // Pass the current edges to accumulate further
-      const childResult = await fetchNode(child.nodeId, nodesCollectionRef, edges);
+      const childResult = await fetchNode(child.nodeId, nodesCollectionRef, edges, nodes);
       if (childResult.node) {
-        // Combine edges from this call with those accumulated from children
-        edges = [...edges, ...childResult.edges, { id: `e${nodeId}-${child.nodeId}`, source: nodeId, target: child.nodeId, label: child.text }];
+        // Add edge for current node to child node for each child node
+        edges.push({ id: `e${nodeId}-${child.nodeId}`, source: nodeId, target: child.nodeId, label: child.text });
+        //edges = [...edges, ...childResult.edges, { id: `e${nodeId}-${child.nodeId}`, source: nodeId, target: child.nodeId, label: child.text }];
       }
     }
   }
 
-  return { node: reactFlowNode, edges: edges };
+  return { node: reactFlowNode, edges: edges , nodes: nodes};
 }
 
 const DecisionTree = ({ docId }) => {
+  const [nodes, setNodes] = useState([]);
+  const [edges, setEdges] = useState([]);
   //const [elements, setElements] = useState([]); //USE THIS CODE, OTHER IS FOR TESTING
-  const [elements, setElements] = useState(simpleElements); //THIS IS FOR TESTING, DELETE ME AFTER
-  //RETURN TO TEST BASIC SAMPLE DATA
-  return (
-    <div style={{ width: '100vw', height: '100vh' }}>
-      <ReactFlowProvider>
-          <ReactFlow
-              elements={elements}
-              fitView
-              // Other props...
-          />
-          <Controls/>
-          <MiniMap/>
-          <Background variant="dots" gap={12} size={1} />
-      </ReactFlowProvider>
-    </div>
-  );
+  //const [elements, setElements] = useState(simpleElements); //THIS IS FOR TESTING, DELETE ME AFTER TESTING
   console.log("docId: " + docId);
-  useEffect(() => {
+  const result = useEffect(() => {
     //  async to get tree data
     const loadDecisionTree = async (decisionTreeDocId) => {
+      
       console.log("decisionTreeDocId: " + decisionTreeDocId);
       const treeDocRef = doc(db, "decisionTrees", decisionTreeDocId);
       const treeDocSnap = await getDoc(treeDocRef);
@@ -126,13 +83,14 @@ const DecisionTree = ({ docId }) => {
         return;
       }
 
-      //const treeData = treeDocSnap.data();
-      //const nodesCollectionRef = collection(treeDocRef, "nodes");
-      //const { node: rootNode, edges } = await fetchNode(treeData.rootNode, nodesCollectionRef, []);
+      const treeData = treeDocSnap.data();
+      const nodesCollectionRef = collection(treeDocRef, "nodes");
+      const fetchResult = await fetchNode(treeData.rootNode, nodesCollectionRef, [], []);
       
-      //setElements([rootNode, ...edges]);
-      setElements(simpleElements);
       console.log("here");
+
+      setNodes(fetchResult.nodes);
+      setEdges(fetchResult.edges);
     };
     
     loadDecisionTree(docId); // Use the actual decision tree document ID
@@ -149,7 +107,9 @@ const DecisionTree = ({ docId }) => {
     <div style={{ width: '100vw', height: '100vh' }}>
         <ReactFlowProvider>
             <ReactFlow
-                elements={elements} fitView
+                nodes={nodes}
+                edges={edges}
+                fitView
                 onNodeDoubleClick={(event, node) => handleNodeUpdate(node.id, {/* newData */})}
             />
             <Controls/>
