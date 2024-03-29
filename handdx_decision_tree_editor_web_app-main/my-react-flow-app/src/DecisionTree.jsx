@@ -38,7 +38,7 @@ async function fetchNode(nodeId, nodesCollectionRef, accumulatedEdges = [], accu
   const nodeData = nodeSnap.data();
   const reactFlowNode = {
     id: nodeId,
-    data: { label: nodeData.text || `Node ${nodeId}` },
+    data: { label: nodeData.question || nodeData.result /*`Node ${nodeId}`*/ },
     position: { x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight },
     type: nodeData.isResult ? 'output' : 'default',
   };
