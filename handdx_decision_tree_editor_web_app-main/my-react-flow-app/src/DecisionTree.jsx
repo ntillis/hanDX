@@ -13,16 +13,7 @@ import app from './firebaseConfig';
 
 const db = getFirestore(app);
 
-//sample edge data for testing
-const simpleElements = [
-  { id: '1', type: 'input', data: { label: 'Root Node' }, position: { x: 250, y: 5 } },
-  { id: '2', data: { label: 'Child Node 1' }, position: { x: 100, y: 100 } },
-  { id: '3', data: { label: 'Child Node 2' }, position: { x: 400, y: 100 } },
-  { id: 'e1-2', source: '1', target: '2', animated: true },
-  { id: 'e1-3', source: '1', target: '3', animated: true },
-];
-
-async function fetchNode(nodeId, nodesCollectionRef, accumulatedEdges = [], accumulatedNodes = []) {
+async function fetchNode(nodeId, nodesCollectionRef, accumulatedEdges = [], accumulatedNodes = [], height, xPos) {
   console.log("path: " + nodesCollectionRef.path);
   console.log("nodeId: " + nodeId);
 
@@ -34,12 +25,14 @@ async function fetchNode(nodeId, nodesCollectionRef, accumulatedEdges = [], accu
     return { node: null, edges: accumulatedEdges, nodes: accumulatedNodes };
   }
 
+  const vSpacing = height * 200; // Control vertical spacing of nodes
+
   //Get data of current node, populate node fields with it
   const nodeData = nodeSnap.data();
   const reactFlowNode = {
     id: nodeId,
     data: { label: nodeData.question || nodeData.result /*`Node ${nodeId}`*/ },
-    position: { x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight },
+    position: { x: xPos/*Math.random() * window.innerWidth*/, y: vSpacing },
     type: nodeData.isResult ? 'output' : 'default',
   };
 
@@ -49,15 +42,17 @@ async function fetchNode(nodeId, nodesCollectionRef, accumulatedEdges = [], accu
   nodes.push(reactFlowNode);
 
   if (nodeData.children) {
+    let childX = xPos - 200;  // Control horizontal spacing of nodes
     for (const child of nodeData.children) {
       console.log("about to call fetchNode with child.nodeId: " + child.nodeId);
+      console.log("spacing: " + vSpacing + " of node: " + child.nodeId);
       // Pass the current edges to accumulate further
-      const childResult = await fetchNode(child.nodeId, nodesCollectionRef, edges, nodes);
+      const childResult = await fetchNode(child.nodeId, nodesCollectionRef, edges, nodes, height + 1, childX);
       if (childResult.node) {
         // Add edge for current node to child node for each child node
         edges.push({ id: `e${nodeId}-${child.nodeId}`, source: nodeId, target: child.nodeId, label: child.text });
-        //edges = [...edges, ...childResult.edges, { id: `e${nodeId}-${child.nodeId}`, source: nodeId, target: child.nodeId, label: child.text }];
       }
+      childX = xPos;
     }
   }
 
@@ -67,14 +62,12 @@ async function fetchNode(nodeId, nodesCollectionRef, accumulatedEdges = [], accu
 const DecisionTree = ({ docId }) => {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
-  //const [elements, setElements] = useState([]); //USE THIS CODE, OTHER IS FOR TESTING
-  //const [elements, setElements] = useState(simpleElements); //THIS IS FOR TESTING, DELETE ME AFTER TESTING
-  console.log("docId: " + docId);
+  //console.log("docId: " + docId);
   const result = useEffect(() => {
     //  async to get tree data
     const loadDecisionTree = async (decisionTreeDocId) => {
       
-      console.log("decisionTreeDocId: " + decisionTreeDocId);
+      //console.log("decisionTreeDocId: " + decisionTreeDocId);
       const treeDocRef = doc(db, "decisionTrees", decisionTreeDocId);
       const treeDocSnap = await getDoc(treeDocRef);
 
@@ -85,9 +78,9 @@ const DecisionTree = ({ docId }) => {
 
       const treeData = treeDocSnap.data();
       const nodesCollectionRef = collection(treeDocRef, "nodes");
-      const fetchResult = await fetchNode(treeData.rootNode, nodesCollectionRef, [], []);
+      const fetchResult = await fetchNode(treeData.rootNode, nodesCollectionRef, [], [], 0, 0);
       
-      console.log("here");
+      //console.log("here");
 
       setNodes(fetchResult.nodes);
       setEdges(fetchResult.edges);
@@ -102,6 +95,7 @@ const DecisionTree = ({ docId }) => {
     updateNode(nodeId, newData);
     // Update local state if needed
   };
+
   // Render the decision tree with React Flow
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
@@ -110,6 +104,7 @@ const DecisionTree = ({ docId }) => {
                 nodes={nodes}
                 edges={edges}
                 fitView
+                panOnDrag
                 onNodeDoubleClick={(event, node) => handleNodeUpdate(node.id, {/* newData */})}
             />
             <Controls/>
